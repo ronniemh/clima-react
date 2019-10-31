@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Error from "./components/Error";
 import Formulario from "./components/Formulario";
+import Clima from "./components/Clima";
 function App() {
   //State principal
   //ciudad = state, guardarCiudad = this.setState
@@ -9,6 +10,7 @@ function App() {
   const [ciudad, guardarCiudad] = useState("");
   const [pais, guardarPais] = useState("");
   const [error, guardarError] = useState(false);
+  const [resultado, guardarResultado] = useState({});
 
   useEffect(() => {
     //prevenir ejecucion
@@ -26,8 +28,8 @@ function App() {
   
       const respuesta = await fetch(url);
       const resultado = await respuesta.json();
-  
-      console.log(resultado);
+      //console.log(resultado);
+      guardarResultado(resultado);
     };
 
     consultarAPI();
@@ -52,8 +54,14 @@ function App() {
   if (error) {
     //Hay un error, mostrarlo
     componente = <Error mensaje={"Ambos campos son obligatorios"} />;
-  } else {
-    componente = null;
+  } 
+  else if(resultado.cod === "404"){
+    componente = <Error mensaje={"La ciudad no existe en nuestro registro"}/>;
+  }
+  else {
+    componente = <Clima 
+    resultado = {resultado}
+    />;
   }
 
   return (
@@ -66,7 +74,7 @@ function App() {
               <Formulario datosConsulta={datosConsulta} />
             </div>
             <div className="col s12 m6">{componente}</div>
-          </div>
+          </div>          
         </div>
       </div>
     </div>
